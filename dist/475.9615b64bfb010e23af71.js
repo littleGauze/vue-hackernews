@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkvue_hackernews=self.webpackChunkvue_hackernews||[]).push([[475],{475:(e,l,n)=>{n.r(l),n.d(l,{default:()=>t});const t=(0,n(900).Z)({title:"Home"},(function(){var e=this,l=e.$createElement;return(e._self._c||l)("div",[e._v("Home Page")])}),[],!1,null,null,null).exports}}]);
