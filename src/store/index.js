@@ -9,7 +9,19 @@ Vue.use(Vuex)
 
 export function createStore() {
   return new Vuex.Store({
-    state: {},
+    state: {
+      activeType: null,
+      itemsPerPage: 20,
+      items: {},
+      users: {},
+      lists: {
+        top: [],
+        new: [],
+        show: [],
+        ask: [],
+        job: []
+      }
+    },
     actions,
     mutations,
     getters

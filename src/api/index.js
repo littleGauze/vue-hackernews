@@ -1,20 +1,21 @@
-import { createApi } from 'create-api'
+import { createAPI, server } from 'create-api'
 
-const debug = !!process.env.DEBUG_API
-
-const api = createApi({
+const api = createAPI({
   version: '/v0',
   config: {
     databaseURL: 'https://hacker-news.firebaseio.com'
   }
 })
 
+const debug = api.onServer && !!process.env.DEBUG_API
+
 if (api.onServer) {
   warmCache()
 }
 
 function warmCache() {
-  
+  fetchItems((api.cachedIds.top || []).slice(0, 30))
+  setTimeout(warmCache, 1000 * 60 * 15)
 }
 
 function fetch(child) {
@@ -26,24 +27,24 @@ function fetch(child) {
     return Promise.resolve(cache.get(child))
   }
   return new Promise((resolve, reject) => {
-    api.child(child).once('value', snapshot => {
-      const val = snapshot.val()
+    server.get(child).then(res => {
+      const val = res.data
       if (val) val.__lastUpdated = Date.now()
       cache && cache.set(child, val)
       debug && console.log(`fetched ${child}.`)
       resolve(val)
-    }, reject)
+    }).catch(reject)
   })
 }
 
 export function fetchIdsByType(type) {
-  return api.chachedIds && api.chachedIds[type]
-    ? Promise.resolve(api.chachedIds[type])
+  return api.cachedIds && api.cachedIds[type]
+    ? Promise.resolve(api.cachedIds[type])
     : fetch(`${type}stores`)
 }
 
 export function fetchItem(id) {
-  return fetch(`item/${id}`)
+  return fetch(`items/${id}`)
 }
 
 export function fetchItems(ids) {
@@ -51,12 +52,11 @@ export function fetchItems(ids) {
 }
 
 export function fetchUser(id) {
-  return fetch(`user/${id}`)
+  return fetch(`users/${id}`)
 }
 
-export function whiteList(type, cb) {
+export function watchList(type, cb) {
   let first = true
-  const ref = api.child(`${type}stores`)
   const handler = snapshot => {
     if (first)  {
       first = false
@@ -64,8 +64,6 @@ export function whiteList(type, cb) {
       cb(snapshot.val())
     }
   }
-  ref.on('value', handler)
   return () => {
-    ref.off('value', handler)
   }
 }

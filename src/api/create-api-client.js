@@ -1,7 +1,21 @@
-import Firebase from 'firebase/app'
-import 'firebase/database'
+// import { initializeApp } from 'firebase/app'
+// import { getDatabase, ref, onValue } from 'firebase/database'
 
-export function creatAPI({ config, version }) {
-  Firebase.initializeApp(config)
-  return Firebase.database().ref(version)
+// export const Ref = ref
+// export const OnValue = onValue
+
+
+// export function createAPI({ config, version }) {
+//   const app = initializeApp(config)
+//   return getDatabase(app)
+// }
+
+import { createServer } from './request'
+
+const ss = createServer('http://localhost:8080/')
+
+export const server = ss
+
+export function createAPI() {
+  return {}
 }
